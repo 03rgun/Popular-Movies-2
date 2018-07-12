@@ -14,13 +14,33 @@ public class NetworkUtils {
     // https://api.themoviedb.org/3/movie/popular?api_key={YOUR API KEY HERE}&language=en-US&page=1
     final static String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3/movie";
     final static String PARAM_API_KEY = "api_key";
-    final static String apiKey = "REPLACE THIS TEXT WITH YOUR API KEY";
+    final static String apiKey = "d55366dfea5b056bf6590cf7ee93e247";
     final static String PARAM_LANGUAGE = "language";
     final static String language = "en-US";
+    final static String videos = "videos";
+    final static String test = "";
 
     public static URL buildUrl(String theMovieDbSearchQuery){
         Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
                 .appendEncodedPath(theMovieDbSearchQuery)
+                .appendQueryParameter(PARAM_API_KEY, apiKey)
+                .appendQueryParameter(PARAM_LANGUAGE, language)
+                .build();
+
+        URL url = null;
+        try{
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+        return url;
+    }
+
+    // build another url for trailers
+    public static URL buildTrailerUrl(int specificMovieId){
+        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
+                .appendEncodedPath(String.valueOf(specificMovieId))
+                .appendEncodedPath(videos)
                 .appendQueryParameter(PARAM_API_KEY, apiKey)
                 .appendQueryParameter(PARAM_LANGUAGE, language)
                 .build();

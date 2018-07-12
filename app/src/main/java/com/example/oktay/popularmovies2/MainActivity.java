@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         intentToStartDetailActivity.putExtra("rate", jsonMovieData[adapterPosition].getRate());
         intentToStartDetailActivity.putExtra("release", jsonMovieData[adapterPosition].getRelease());
         intentToStartDetailActivity.putExtra("overview", jsonMovieData[adapterPosition].getOverview());
+        intentToStartDetailActivity.putExtra("id", jsonMovieData[adapterPosition].getId());
 
         startActivity(intentToStartDetailActivity);
     }
@@ -127,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (movieData != null) {
                 showJsonDataResults();
-                //mMovieAdapter.setMovieData(movieData);
                 mMovieAdapter = new MovieAdapter(movieData,MainActivity.this);
                 mRecyclerView.setAdapter(mMovieAdapter);
             } else {
@@ -156,12 +156,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         if (menuItemSelected == R.id.action_top_rated) {
             query = "top_rated";
             loadMovieData();
-            return true;
-        }
-
-        if(menuItemSelected == R.id.action_about){
-            Intent startAboutActivity = new Intent(this, AboutActivity.class);
-            startActivity(startAboutActivity);
             return true;
         }
 

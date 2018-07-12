@@ -2,17 +2,19 @@ package com.example.oktay.popularmovies2.model;
 
 public class Movie {
     private String title, poster, release, rate, overview;
+    private int id;
 
     //constructor
     public Movie(){
     }
 
-    public Movie(String title, String poster, String release, String rate, String overview){
+    public Movie(String title, String poster, String release, String rate, String overview, int id){
         this.title = title;
         this.poster = poster;
         this.release = release;
         this.rate = rate;
         this.overview = overview;
+        this.id = id;
     }
 
     //generate getters and setters
@@ -54,5 +56,13 @@ public class Movie {
 
     public void setOverview(String overview) {
         this.overview = overview;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 }

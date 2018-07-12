@@ -2,6 +2,7 @@ package com.example.oktay.popularmovies2.utilities;
 import android.content.Context;
 
 import com.example.oktay.popularmovies2.model.Movie;
+import com.example.oktay.popularmovies2.model.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +22,7 @@ public class TheMovieDbJsonUtils {
         final String TMDB_VOTE = "vote_average";
         final String TMDB_OVERVIEW = "overview";
         final String TMDB_RELEASE_DATE = "release_date";
+        final String TMDB_MOVIE_ID = "id";
 
         //I've got some help from: https://www.codevoila.com/post/65/java-json-tutorial-and-example-json-java-orgjson#toc_5
         //and once again the amazing sunshine app.
@@ -34,6 +36,7 @@ public class TheMovieDbJsonUtils {
 
         for (int i = 0; i < movieArray.length(); i++){
             String poster_path, title, vote_average, overview, release_date;
+            int id;
 
             Movie movie = new Movie();
 
@@ -42,6 +45,7 @@ public class TheMovieDbJsonUtils {
             release_date = movieArray.getJSONObject(i).optString(TMDB_RELEASE_DATE);
             vote_average = movieArray.getJSONObject(i).optString(TMDB_VOTE);
             overview = movieArray.getJSONObject(i).optString(TMDB_OVERVIEW);
+            id = movieArray.getJSONObject(i).optInt(TMDB_MOVIE_ID);
 
             //setters
             movie.setPoster(TMDB_BASE_URL + TMDB_POSTER_SIZE + poster_path);
@@ -49,10 +53,47 @@ public class TheMovieDbJsonUtils {
             movie.setRelease(release_date);
             movie.setRate(vote_average);
             movie.setOverview(overview);
+            movie.setId(id);
 
             movieResults[i] = movie;
         }
 
         return movieResults;
     }
+
+
+    public static Trailer[] getTrailerInformationsFromJson(Context context, String json) throws JSONException {
+
+        final String TMDB_TRAILER_BASE_URL = "https://www.youtube.com/watch?v=";
+
+        final String TMDB_TRAILER_RESULTS = "results";
+        final String TMDB_TRAILER_KEY = "key";
+        final String TMDB_TRAILER_NAME = "name";
+
+        JSONObject trailerJson = new JSONObject(json);
+
+        JSONArray trailerArray = trailerJson.getJSONArray(TMDB_TRAILER_RESULTS);
+
+        Trailer[] trailerResults = new Trailer[trailerArray.length()];
+
+
+        for (int i = 0; i < trailerArray.length(); i++){
+            String trailer_key, trailer_name;
+
+            Trailer trailer = new Trailer();
+
+            trailer_key = trailerArray.getJSONObject(i).optString(TMDB_TRAILER_KEY);
+
+            trailer_name = trailerArray.getJSONObject(i).optString(TMDB_TRAILER_NAME);
+
+            //setters
+            trailer.setKey(TMDB_TRAILER_BASE_URL + trailer_key);
+            trailer.setName(trailer_name);
+
+            trailerResults[i] = trailer;
+        }
+
+        return trailerResults;
+    }
+
 }

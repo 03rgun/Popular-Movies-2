@@ -13,7 +13,7 @@ import com.squareup.picasso.Picasso;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
     //I went through Sunshine's RecyclerView and Click Handlers.
-//Following codes are from Sunshine.
+    //Following codes are from Sunshine.
     private Movie[] mMovieData;
     private final MovieAdapterOnClickHandler mClickHandler;
 
