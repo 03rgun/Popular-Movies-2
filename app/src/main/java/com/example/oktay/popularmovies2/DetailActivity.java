@@ -25,6 +25,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private RecyclerView mRecyclerView;
     private TrailerAdapter mTrailerAdapter;
     private Trailer[] jsonTrailerData;
+    private int id = 0;
 
     @BindView(R.id.iv_detail_movie_poster)
     ImageView mMoviePosterDisplay;
@@ -36,8 +37,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     TextView mMovieReleaseDisplay;
     @BindView(R.id.tv_plot_synopsis)
     TextView mMoviePlotSynopsisDisplay;
-    @BindView(R.id.tv_movie_id)
-    TextView mMovieIdDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +63,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         String rate = getIntent().getStringExtra("rate");
         String release = getIntent().getStringExtra("release");
         String overview = getIntent().getStringExtra("overview");
+        id = getIntent().getIntExtra("id",0);
 
 
-        mMovieIdDisplay.setText("delete this.");
         mMovieTitleDisplay.setText(title);
         mMoviePlotSynopsisDisplay.setText(overview);
         mMovieRateDisplay.setText(rate + " / 10");
@@ -77,7 +76,16 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .error(R.drawable.image_not_found)
                 .into(mMoviePosterDisplay);
 
+        loadMovieData();
+
     }
+
+
+    private void loadMovieData() {
+        String trailerId = String.valueOf(id);
+        new FetchTrailerTask().execute(trailerId);
+    }
+
 
     @Override
     public void onClick(int adapterPosition) {
@@ -98,7 +106,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             if (params.length == 0){
                 return null;
             }
-            int id = getIntent().getIntExtra("id",0);
 
             URL movieRequestUrl = NetworkUtils.buildTrailerUrl(id);
 
@@ -122,7 +129,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 mTrailerAdapter = new TrailerAdapter(trailerData,DetailActivity.this);
                 mRecyclerView.setAdapter(mTrailerAdapter);
             } else {
-                mMovieIdDisplay.setText("An error occured. Can't reach trailers. Please try again. ");
+                // type an error message here aligned in trailer part
             }
         }
 

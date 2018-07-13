@@ -6,6 +6,7 @@
     <string name="label_rate">Rate: </string>
     <string name="label_release_date">Release Date: </string>
     <string name="label_overview">Overview: </string>
+    <string name="label_trailers">Trailers: </string>
     <!-- details -->
     <string name="detail_title">Matrix</string>
     <string name="detail_plot_synopsis">A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.</string>

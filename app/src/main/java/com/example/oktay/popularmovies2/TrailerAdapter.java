@@ -30,7 +30,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerA
 
         public TrailerAdapterViewHolder(View itemView) {
             super(itemView);
-            mTrailerListTextView = (TextView) itemView.findViewById(R.id.tv_trailer_posters);
+            mTrailerListTextView = (TextView) itemView.findViewById(R.id.tv_trailer_names);
             itemView.setOnClickListener(this);
         }
 
