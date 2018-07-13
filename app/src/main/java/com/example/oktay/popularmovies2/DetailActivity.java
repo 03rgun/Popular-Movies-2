@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.oktay.popularmovies2.model.Review;
 import com.example.oktay.popularmovies2.model.Trailer;
 import com.example.oktay.popularmovies2.utilities.NetworkUtils;
 import com.example.oktay.popularmovies2.utilities.TheMovieDbJsonUtils;
@@ -27,8 +28,11 @@ import static com.example.oktay.popularmovies2.TrailerAdapter.mTrailerURL;
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler{
 
     private RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerViewReviews;
     private TrailerAdapter mTrailerAdapter;
+    private ReviewAdapter mReviewAdapter;
     private Trailer[] jsonTrailerData;
+    private Review[] jsonReviewData;
     private int id = 0;
 
     @BindView(R.id.iv_detail_movie_poster)
@@ -43,12 +47,15 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     TextView mMoviePlotSynopsisDisplay;
     @BindView(R.id.trailer_error_message)
     TextView mTrailerErrorMessage;
+    @BindView(R.id.review_error_message)
+    TextView mReviewErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        //trailers
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_trailers);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -57,8 +64,23 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         //changes in content shouldn't change the layout size
         mRecyclerView.setHasFixedSize(true);
 
-        //set movie adapter for recycler view
+        //set trailer adapter for recycler view
         mRecyclerView.setAdapter(mTrailerAdapter);
+
+
+
+        //reviews
+        mRecyclerViewReviews = (RecyclerView) findViewById(R.id.recyclerview_reviews);
+
+        LinearLayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
+        //set the layout manager
+        mRecyclerViewReviews.setLayoutManager(reviewsLayoutManager);
+        //changes in content shouldn't change the layout size
+        mRecyclerViewReviews.setHasFixedSize(true);
+
+        //set review adapter for recycler view
+        mRecyclerViewReviews.setAdapter(mReviewAdapter);
+
 
 
         ButterKnife.bind(this);
@@ -83,13 +105,18 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .into(mMoviePosterDisplay);
 
         loadTrailerData();
-
+        loadReviewData();
     }
 
 
     private void loadTrailerData() {
         String trailerId = String.valueOf(id);
         new FetchTrailerTask().execute(trailerId);
+    }
+
+    private void loadReviewData() {
+        String reviewId = String.valueOf(id);
+        new FetchReviewTask().execute(reviewId);
     }
 
 
@@ -103,7 +130,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         }
     }
 
-
+// Async Task for trailers
     public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
         @Override
         protected void onPreExecute() {
@@ -143,4 +170,47 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         }
 
     }
+
+
+//Async task for reviews
+    public class FetchReviewTask extends AsyncTask<String, Void, Review[]> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Review[] doInBackground(String... params) {
+            if (params.length == 0){
+                return null;
+            }
+
+            URL movieRequestUrl = NetworkUtils.buildReviewUrl(id);
+
+            try {
+                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
+
+                jsonReviewData
+                        = TheMovieDbJsonUtils.getReviewInformationsFromJson(DetailActivity.this, jsonMovieResponse);
+
+                return jsonReviewData;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Review[] reviewData) {
+            if (reviewData != null) {
+                mReviewAdapter = new ReviewAdapter(reviewData);
+                mRecyclerViewReviews.setAdapter(mReviewAdapter);
+            } else {
+                mReviewErrorMessage.setVisibility(View.VISIBLE);
+            }
+        }
+
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.oktay.popularmovies2.utilities;
 import android.content.Context;
 
 import com.example.oktay.popularmovies2.model.Movie;
+import com.example.oktay.popularmovies2.model.Review;
 import com.example.oktay.popularmovies2.model.Trailer;
 
 import org.json.JSONArray;
@@ -96,4 +97,35 @@ public class TheMovieDbJsonUtils {
         return trailerResults;
     }
 
+
+    public static Review[] getReviewInformationsFromJson(Context context, String json) throws JSONException {
+
+        final String TMDB_REVIEW_RESULTS = "results";
+        final String TMDB_REVIEW_AUTHOR = "author";
+        final String TMDB_REVIEW_CONTENT = "content";
+
+        JSONObject reviewJson = new JSONObject(json);
+
+        JSONArray reviewArray = reviewJson.getJSONArray(TMDB_REVIEW_RESULTS);
+
+        Review[] reviewResults = new Review[reviewArray.length()];
+
+
+        for (int i = 0; i < reviewArray.length(); i++){
+            String review_author, review_content;
+
+            Review review = new Review();
+
+            review_author = reviewArray.getJSONObject(i).optString(TMDB_REVIEW_AUTHOR);
+            review_content = reviewArray.getJSONObject(i).optString(TMDB_REVIEW_CONTENT);
+
+            //setters
+            review.setAuthor(review_author);
+            review.setContent(review_content);
+
+            reviewResults[i] = review;
+        }
+
+        return reviewResults;
+    }
 }

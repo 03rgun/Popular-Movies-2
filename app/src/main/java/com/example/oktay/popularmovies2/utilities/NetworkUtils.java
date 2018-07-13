@@ -18,7 +18,7 @@ public class NetworkUtils {
     final static String PARAM_LANGUAGE = "language";
     final static String language = "en-US";
     final static String videos = "videos";
-    final static String test = "";
+    final static String reviews = "reviews";
 
     public static URL buildUrl(String theMovieDbSearchQuery){
         Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
@@ -41,6 +41,24 @@ public class NetworkUtils {
         Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
                 .appendEncodedPath(String.valueOf(specificMovieId))
                 .appendEncodedPath(videos)
+                .appendQueryParameter(PARAM_API_KEY, apiKey)
+                .appendQueryParameter(PARAM_LANGUAGE, language)
+                .build();
+
+        URL url = null;
+        try{
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+        return url;
+    }
+
+    // build another url for reviews
+    public static URL buildReviewUrl(int specificMovieId){
+        Uri builtUri = Uri.parse(THEMOVIEDB_BASE_URL).buildUpon()
+                .appendEncodedPath(String.valueOf(specificMovieId))
+                .appendEncodedPath(reviews)
                 .appendQueryParameter(PARAM_API_KEY, apiKey)
                 .appendQueryParameter(PARAM_LANGUAGE, language)
                 .build();
