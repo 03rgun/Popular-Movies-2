@@ -2,11 +2,13 @@ package com.example.oktay.popularmovies2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +21,8 @@ import java.net.URL;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.oktay.popularmovies2.TrailerAdapter.mTrailerURL;
 
 public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler{
 
@@ -37,6 +41,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     TextView mMovieReleaseDisplay;
     @BindView(R.id.tv_plot_synopsis)
     TextView mMoviePlotSynopsisDisplay;
+    @BindView(R.id.trailer_error_message)
+    TextView mTrailerErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,12 +82,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .error(R.drawable.image_not_found)
                 .into(mMoviePosterDisplay);
 
-        loadMovieData();
+        loadTrailerData();
 
     }
 
 
-    private void loadMovieData() {
+    private void loadTrailerData() {
         String trailerId = String.valueOf(id);
         new FetchTrailerTask().execute(trailerId);
     }
@@ -89,9 +95,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     @Override
     public void onClick(int adapterPosition) {
-        Context context = this;
-        Intent intentToStartDetailActivity = new Intent(context, MainActivity.class);
-        startActivity(intentToStartDetailActivity);
+        Uri openTrailerVideo = Uri.parse(mTrailerURL);
+        Intent intent = new Intent(Intent.ACTION_VIEW, openTrailerVideo);
+        //check if user does have the required apps
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
 
@@ -129,10 +138,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 mTrailerAdapter = new TrailerAdapter(trailerData,DetailActivity.this);
                 mRecyclerView.setAdapter(mTrailerAdapter);
             } else {
-                // type an error message here aligned in trailer part
+                mTrailerErrorMessage.setVisibility(View.VISIBLE);
             }
         }
 
     }
-
 }

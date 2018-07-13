@@ -15,6 +15,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerA
     private Trailer[] mTrailerData;
     private final TrailerAdapterOnClickHandler mClickHandler;
     public static TextView mTrailerListTextView = null;
+    public static String mTrailerURL;
 
     public TrailerAdapter(Trailer[] trailer, TrailerAdapterOnClickHandler clickHandler) {
         mTrailerData = trailer;
@@ -57,7 +58,9 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerA
     public void onBindViewHolder(@NonNull TrailerAdapterViewHolder holder, int position) {
         //set the Trailer for list item's position
         String TrailerToBind = mTrailerData[position].getName();
+        String TrailerToWatch = mTrailerData[position].getKey();
         mTrailerListTextView.setText(TrailerToBind);
+        mTrailerURL = TrailerToWatch;
     }
 
     @Override
