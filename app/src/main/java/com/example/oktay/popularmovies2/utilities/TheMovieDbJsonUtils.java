@@ -65,7 +65,6 @@ public class TheMovieDbJsonUtils {
 
     public static Trailer[] getTrailerInformationsFromJson(Context context, String json) throws JSONException {
 
-        final String TMDB_TRAILER_BASE_URL = "https://www.youtube.com/watch?v=";
 
         final String TMDB_TRAILER_RESULTS = "results";
         final String TMDB_TRAILER_KEY = "key";
@@ -88,7 +87,7 @@ public class TheMovieDbJsonUtils {
             trailer_name = trailerArray.getJSONObject(i).optString(TMDB_TRAILER_NAME);
 
             //setters
-            trailer.setKey(TMDB_TRAILER_BASE_URL + trailer_key);
+            trailer.setKey(trailer_key);
             trailer.setName(trailer_name);
 
             trailerResults[i] = trailer;

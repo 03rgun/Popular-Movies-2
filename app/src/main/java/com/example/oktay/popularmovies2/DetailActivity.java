@@ -3,6 +3,8 @@ package com.example.oktay.popularmovies2;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -25,6 +27,7 @@ import com.example.oktay.popularmovies2.utilities.TheMovieDbJsonUtils;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,6 +46,8 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     String title = "";
     private SQLiteDatabase mDb;
     private final static String LOG_TAG = DetailActivity.class.getSimpleName();
+    final String TMDB_TRAILER_BASE_URL = "https://www.youtube.com/watch?v=";
+
 
     @BindView(R.id.iv_detail_movie_poster)
     ImageView mMoviePosterDisplay;
@@ -152,10 +157,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     @Override
     public void onClick(int adapterPosition) {
-        Uri openTrailerVideo = Uri.parse(mTrailerURL);
+        //resource https://developer.android.com/training/basics/intents/sending
+        Uri openTrailerVideo = Uri.parse(TMDB_TRAILER_BASE_URL + mTrailerURL);
         Intent intent = new Intent(Intent.ACTION_VIEW, openTrailerVideo);
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+        boolean isIntentSafe = activities.size() > 0;
         //check if user does have the required apps
-        if (intent.resolveActivity(getPackageManager()) != null) {
+        if (isIntentSafe) {
             startActivity(intent);
         }
     }

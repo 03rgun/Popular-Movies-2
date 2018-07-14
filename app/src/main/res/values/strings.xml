@@ -21,5 +21,6 @@
     <string name="popular">Popular</string>
     <string name="top_rated">Top Rated</string>
     <string name="favorites">Favorites</string>
-
+    <!-- chooser -->
+    <string name="chooser_title">Watch this trailer with</string>
 </resources>
