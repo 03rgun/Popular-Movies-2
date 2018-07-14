@@ -1,7 +1,9 @@
 package com.example.oktay.popularmovies2;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +11,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.oktay.popularmovies2.data.FavoritesContract;
+import com.example.oktay.popularmovies2.data.FavoritesDbHelper;
 import com.example.oktay.popularmovies2.model.Review;
 import com.example.oktay.popularmovies2.model.Trailer;
 import com.example.oktay.popularmovies2.utilities.NetworkUtils;
@@ -34,6 +40,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     private Trailer[] jsonTrailerData;
     private Review[] jsonReviewData;
     private int id = 0;
+    String title = "";
+    private SQLiteDatabase mDb;
+    private final static String LOG_TAG = DetailActivity.class.getSimpleName();
 
     @BindView(R.id.iv_detail_movie_poster)
     ImageView mMoviePosterDisplay;
@@ -49,11 +58,20 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     TextView mTrailerErrorMessage;
     @BindView(R.id.review_error_message)
     TextView mReviewErrorMessage;
+    @BindView(R.id.add_to_favorites)
+    Button mAddToFavorites;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+        //favorites
+        FavoritesDbHelper dbHelper = new FavoritesDbHelper(this);
+        mDb = dbHelper.getWritableDatabase();
+
+
 
         //trailers
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_trailers);
@@ -82,12 +100,12 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         mRecyclerViewReviews.setAdapter(mReviewAdapter);
 
 
-
         ButterKnife.bind(this);
+
 
         // https://stackoverflow.com/questions/41791737/how-to-pass-json-image-from-recycler-view-to-another-activity
         String poster = getIntent().getStringExtra("poster");
-        String title = getIntent().getStringExtra("title");
+        title = getIntent().getStringExtra("title");
         String rate = getIntent().getStringExtra("rate");
         String release = getIntent().getStringExtra("release");
         String overview = getIntent().getStringExtra("overview");
@@ -103,6 +121,18 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .placeholder(R.drawable.image_loading)
                 .error(R.drawable.image_not_found)
                 .into(mMoviePosterDisplay);
+
+        mAddToFavorites.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                addToFavorites(title, id);
+
+                Context context = getApplicationContext();
+                CharSequence addedFavorites = "This movie is added to your favorites.";
+                Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
 
         loadTrailerData();
         loadReviewData();
@@ -213,4 +243,14 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     }
 
+    //add to favorites
+    private long addToFavorites(String name, int id){
+        //create a ContentValues instance to pass the values onto the insert query
+        ContentValues cv = new ContentValues();
+        //call put to insert the values with the keys
+        cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID, id);
+        cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_NAME, name);
+        //run an insert query on TABLE_NAME with the ContentValues created
+        return mDb.insert(FavoritesContract.FavoritesAdd.TABLE_NAME, null, cv);
+    }
 }

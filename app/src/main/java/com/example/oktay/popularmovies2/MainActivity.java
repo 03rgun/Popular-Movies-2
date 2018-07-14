@@ -159,6 +159,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             return true;
         }
 
+        if (menuItemSelected == R.id.action_favorites) {
+            Context context = this;
+            Class destinationClass = FavoritesActivity.class;
+            Intent intentToStartFavorites = new Intent(context, destinationClass);
+            startActivity(intentToStartFavorites);
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
