@@ -58,6 +58,7 @@
             app:layout_constraintStart_toStartOf="@+id/tv_detail_release_date"
             app:layout_constraintBottom_toBottomOf="@+id/iv_detail_movie_poster" />
 
+
         <TextView
             android:id="@+id/tv_plot_synopsis"
             android:layout_width="match_parent"

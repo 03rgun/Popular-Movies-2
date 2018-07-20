@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.example.oktay.popularmovies2.data.FavoritesContract;
 import com.example.oktay.popularmovies2.data.FavoritesDbHelper;
@@ -64,7 +66,9 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     @BindView(R.id.review_error_message)
     TextView mReviewErrorMessage;
     @BindView(R.id.add_to_favorites)
-    Button mAddToFavorites;
+    Button mFavorites;
+//    @BindView(R.id.add_to_favorites)
+//    ToggleButton mFavorites;
 
 
     @Override
@@ -127,20 +131,33 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
                 .error(R.drawable.image_not_found)
                 .into(mMoviePosterDisplay);
 
-        mAddToFavorites.setOnClickListener(new View.OnClickListener() {
+        mFavorites.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                addToFavorites(title, id);
+                if (isMovieFavorited(id)) {
+                    removeFavorites(id);
 
-                Context context = getApplicationContext();
-                CharSequence addedFavorites = "This movie is added to your favorites.";
-                Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
-                toast.show();
+                    Context context = getApplicationContext();
+                    CharSequence removedFavorites = "This movie is removed from your favorites.";
+                    Toast toast = Toast.makeText(context, removedFavorites, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    mFavorites.setText(getString(R.string.add_to_favorites));
+                } else {
+                    addToFavorites(title, id);
+                    Context context = getApplicationContext();
+                    CharSequence addedFavorites = "This movie is added to your favorites.";
+                    Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
+                    toast.show();
+
+                    mFavorites.setText(getString(R.string.remove_from_favorites));
+                }
             }
         });
 
 
         loadTrailerData();
         loadReviewData();
+        isMovieFavorited(id);
     }
 
 
@@ -252,6 +269,24 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
     }
 
+
+//        if(mFavorites.isChecked()) {
+//            addToFavorites(title, id);
+//            Context context = getApplicationContext();
+//            CharSequence addedFavorites = "This movie is added to your favorites.";
+//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
+//            toast.show();
+//        }
+//        else {
+//            removeFavorites(id);
+//
+//            Context context = getApplicationContext();
+//            CharSequence addedFavorites = "This movie is removed from your favorites.";
+//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
+//            toast.show();
+//        }
+
+
     //add to favorites
     private long addToFavorites(String name, int id){
         //create a ContentValues instance to pass the values onto the insert query
@@ -262,4 +297,66 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         //run an insert query on TABLE_NAME with the ContentValues created
         return mDb.insert(FavoritesContract.FavoritesAdd.TABLE_NAME, null, cv);
     }
+
+    //remove favorites
+    private boolean removeFavorites(int id){
+       return mDb.delete(FavoritesContract.FavoritesAdd.TABLE_NAME,
+                FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=" + id, null) > 0;
+    }
+
+    //check if the id exist in database
+    //source: https://stackoverflow.com/questions/20415309/android-sqlite-how-to-check-if-a-record-exists
+    public boolean isMovieFavorited(int id){
+        String query = "SELECT * FROM " + FavoritesContract.FavoritesAdd.TABLE_NAME + " WHERE "
+                + FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + " = " + id;
+        Cursor cursor = mDb.rawQuery(query, null);
+
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            mFavorites.setText(getString(R.string.add_to_favorites));
+            return false;
+//            mFavorites.setText(getString(R.string.add_to_favorites));
+//            addToFavorites(title, id);
+//
+//            Context context = getApplicationContext();
+//            CharSequence addedFavorites = "NOT FAVORITED This movie is added to your favorites.";
+//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
+//            toast.show();
+        }
+        cursor.close();
+        mFavorites.setText(getString(R.string.remove_from_favorites));
+        return true;
+//
+//            mFavorites.setText(getString(R.string.remove_from_favorites));
+//            removeFavorites(id);
+//
+//            Context context = getApplicationContext();
+//            CharSequence addedFavorites = "ALREADY FAVORITED This movie is removed from your favorites.";
+//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
+//            toast.show();
+
+    }
+
+
+
+
+//    source: https://stackoverflow.com/questions/21277490/example-on-togglebutton
+    public void onToggleClicked(View v){
+        if (isMovieFavorited(id)) {
+            removeFavorites(id);
+
+            Context context = getApplicationContext();
+            CharSequence removedFavorites = "This movie is removed from your favorites.";
+            Toast toast = Toast.makeText(context, removedFavorites, Toast.LENGTH_SHORT);
+            toast.show();
+        } else {
+            addToFavorites(title, id);
+            Context context = getApplicationContext();
+            CharSequence addedFavorites = "This movie is added to your favorites.";
+            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+    }
+
 }
+

@@ -36,8 +36,6 @@ public class FavoritesActivity extends AppCompatActivity {
 
         mFavoritesAdapter = new FavoritesAdapter(this, cursor);
 
-        //mFavoritesAdapter.swapCursor(getAllFavorites());
-
         //set favorites adapter for recycler view
         favoritesRecyclerView.setAdapter(mFavoritesAdapter);
     }

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,10 +36,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     ProgressBar mLoadingIndicator;
 
     String query = "popular";
+    private static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
+        }
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_movies);
@@ -102,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         @Override
         protected Movie[] doInBackground(String... params) {
-            if (params.length == 0){
+            if (params.length == 0) {
                 return null;
             }
 
@@ -128,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (movieData != null) {
                 showJsonDataResults();
-                mMovieAdapter = new MovieAdapter(movieData,MainActivity.this);
+                mMovieAdapter = new MovieAdapter(movieData, MainActivity.this);
                 mRecyclerView.setAdapter(mMovieAdapter);
             } else {
                 showErrorMessage();
@@ -179,4 +184,16 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return noOfColumns;
     }
 
+    //Source: https://developer.android.com/guide/components/activities/activity-lifecycle
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        String lifecycleSortBy = query;
+        outState.putString(LIFECYCLE_CALLBACKS_TEXT_KEY, lifecycleSortBy);
+        super.onSaveInstanceState(outState);
+    }
 }
