@@ -123,7 +123,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
 
         mMovieTitleDisplay.setText(title);
         mMoviePlotSynopsisDisplay.setText(overview);
-        mMovieRateDisplay.setText(rate + " / 10");
+        mMovieRateDisplay.setText(rate + getString(R.string.rate_out_of_ten));
         mMovieReleaseDisplay.setText(release);
         Picasso.get()
                 .load(poster)
