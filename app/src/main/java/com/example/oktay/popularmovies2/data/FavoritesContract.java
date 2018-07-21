@@ -1,9 +1,16 @@
 package com.example.oktay.popularmovies2.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class FavoritesContract {
+    public static final String AUTHORITY = "com.example.oktay.popularmovies2";
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
+    public static final String PATH_FAVORITES = "favorites";
+
     public static final class FavoritesAdd implements BaseColumns{
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITES).build();
 
         public static final String TABLE_NAME = "favorites";
 

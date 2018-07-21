@@ -31,6 +31,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-    </application>
 
+        <provider
+            android:authorities="com.example.oktay.popularmovies2"
+            android:name="com.example.oktay.popularmovies2.data.FavoritesContentProvider"
+            android:exported="true" />
+    </application>
 </manifest>
