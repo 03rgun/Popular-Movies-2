@@ -287,27 +287,6 @@ public class DetailActivity extends AppCompatActivity{
     }
 
 
-
-
-//    source: https://stackoverflow.com/questions/21277490/example-on-togglebutton
-//    public void onToggleClicked(View v){
-//        if (isMovieFavorited(id)) {
-//            removeFavorites(id);
-//
-//            Context context = getApplicationContext();
-//            CharSequence removedFavorites = "This movie is removed from your favorites.";
-//            Toast toast = Toast.makeText(context, removedFavorites, Toast.LENGTH_SHORT);
-//            toast.show();
-//        } else {
-//            addToFavorites(title, id);
-//            Context context = getApplicationContext();
-//            CharSequence addedFavorites = "This movie is added to your favorites.";
-//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
-//            toast.show();
-//        }
-//    }
-
-
 // https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
     @Override
     protected void onPause()
