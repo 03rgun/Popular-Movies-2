@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +33,8 @@ import butterknife.ButterKnife;
 public class DetailActivity extends AppCompatActivity{
 
     private RecyclerView mRecyclerView;
+    private final String KEY_RECYCLER_STATE = "recycler_state";
+    private static Bundle mBundleRecyclerViewState;
     private RecyclerView mRecyclerViewReviews;
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
@@ -287,20 +290,45 @@ public class DetailActivity extends AppCompatActivity{
 
 
 //    source: https://stackoverflow.com/questions/21277490/example-on-togglebutton
-    public void onToggleClicked(View v){
-        if (isMovieFavorited(id)) {
-            removeFavorites(id);
+//    public void onToggleClicked(View v){
+//        if (isMovieFavorited(id)) {
+//            removeFavorites(id);
+//
+//            Context context = getApplicationContext();
+//            CharSequence removedFavorites = "This movie is removed from your favorites.";
+//            Toast toast = Toast.makeText(context, removedFavorites, Toast.LENGTH_SHORT);
+//            toast.show();
+//        } else {
+//            addToFavorites(title, id);
+//            Context context = getApplicationContext();
+//            CharSequence addedFavorites = "This movie is added to your favorites.";
+//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
+//            toast.show();
+//        }
+//    }
 
-            Context context = getApplicationContext();
-            CharSequence removedFavorites = "This movie is removed from your favorites.";
-            Toast toast = Toast.makeText(context, removedFavorites, Toast.LENGTH_SHORT);
-            toast.show();
-        } else {
-            addToFavorites(title, id);
-            Context context = getApplicationContext();
-            CharSequence addedFavorites = "This movie is added to your favorites.";
-            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
-            toast.show();
+
+// https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        // save RecyclerView state
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable listState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        // restore RecyclerView state
+        if (mBundleRecyclerViewState != null) {
+            Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
         }
     }
 

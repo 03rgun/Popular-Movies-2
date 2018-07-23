@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +28,8 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private RecyclerView mRecyclerView;
+    private static Bundle mBundleRecyclerViewState;
+    private final String KEY_RECYCLER_STATE = "recycler_state";
     private MovieAdapter mMovieAdapter;
     private Movie[] jsonMovieData;
 
@@ -195,5 +198,24 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         String lifecycleSortBy = query;
         outState.putString(LIFECYCLE_CALLBACKS_TEXT_KEY, lifecycleSortBy);
         super.onSaveInstanceState(outState);
+    }
+
+    //https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
+    @Override
+    protected void onPause() {
+        mBundleRecyclerViewState = new Bundle();
+        Parcelable listState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // restore RecyclerView state
+        if (mBundleRecyclerViewState != null) {
+            Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
+        }
     }
 }
