@@ -2,12 +2,8 @@ package com.example.oktay.popularmovies2;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.example.oktay.popularmovies2.data.FavoritesContract;
 import com.example.oktay.popularmovies2.data.FavoritesDbHelper;
@@ -29,14 +24,12 @@ import com.example.oktay.popularmovies2.utilities.TheMovieDbJsonUtils;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.oktay.popularmovies2.TrailerAdapter.mTrailerURL;
 
-public class DetailActivity extends AppCompatActivity implements TrailerAdapter.TrailerAdapterOnClickHandler{
+public class DetailActivity extends AppCompatActivity{
 
     private RecyclerView mRecyclerView;
     private RecyclerView mRecyclerViewReviews;
@@ -172,20 +165,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
 
-    @Override
-    public void onClick(int adapterPosition) {
-        //resource https://developer.android.com/training/basics/intents/sending
-        Uri openTrailerVideo = Uri.parse(TMDB_TRAILER_BASE_URL + mTrailerURL);
-        Intent intent = new Intent(Intent.ACTION_VIEW, openTrailerVideo);
-        PackageManager packageManager = getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-        boolean isIntentSafe = activities.size() > 0;
-        //check if user does have the required apps
-        if (isIntentSafe) {
-            startActivity(intent);
-        }
-    }
-
 // Async Task for trailers
     public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
         @Override
@@ -218,7 +197,7 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
         @Override
         protected void onPostExecute(Trailer[] trailerData) {
             if (trailerData != null) {
-                mTrailerAdapter = new TrailerAdapter(trailerData,DetailActivity.this);
+                mTrailerAdapter = new TrailerAdapter(trailerData, DetailActivity.this);
                 mRecyclerView.setAdapter(mTrailerAdapter);
             } else {
                 mTrailerErrorMessage.setVisibility(View.VISIBLE);
@@ -270,23 +249,6 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
     }
 
 
-//        if(mFavorites.isChecked()) {
-//            addToFavorites(title, id);
-//            Context context = getApplicationContext();
-//            CharSequence addedFavorites = "This movie is added to your favorites.";
-//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
-//            toast.show();
-//        }
-//        else {
-//            removeFavorites(id);
-//
-//            Context context = getApplicationContext();
-//            CharSequence addedFavorites = "This movie is removed from your favorites.";
-//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
-//            toast.show();
-//        }
-
-
     //add to favorites
     private long addToFavorites(String name, int id){
         //create a ContentValues instance to pass the values onto the insert query
@@ -315,26 +277,10 @@ public class DetailActivity extends AppCompatActivity implements TrailerAdapter.
             cursor.close();
             mFavorites.setText(getString(R.string.add_to_favorites));
             return false;
-//            mFavorites.setText(getString(R.string.add_to_favorites));
-//            addToFavorites(title, id);
-//
-//            Context context = getApplicationContext();
-//            CharSequence addedFavorites = "NOT FAVORITED This movie is added to your favorites.";
-//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
-//            toast.show();
         }
         cursor.close();
         mFavorites.setText(getString(R.string.remove_from_favorites));
         return true;
-//
-//            mFavorites.setText(getString(R.string.remove_from_favorites));
-//            removeFavorites(id);
-//
-//            Context context = getApplicationContext();
-//            CharSequence addedFavorites = "ALREADY FAVORITED This movie is removed from your favorites.";
-//            Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
-//            toast.show();
-
     }
 
 

@@ -1,6 +1,10 @@
 package com.example.oktay.popularmovies2;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,36 +14,33 @@ import android.widget.TextView;
 
 import com.example.oktay.popularmovies2.model.Trailer;
 
+import java.util.List;
+
 public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerAdapterViewHolder> {
 
     private Trailer[] mTrailerData;
-    private final TrailerAdapterOnClickHandler mClickHandler;
     public static TextView mTrailerListTextView = null;
-    public static String mTrailerURL;
+    final String TMDB_TRAILER_BASE_URL = "https://www.youtube.com/watch?v=";
+    Context context;
 
-    public TrailerAdapter(Trailer[] trailer, TrailerAdapterOnClickHandler clickHandler) {
-        mTrailerData = trailer;
-        mClickHandler = clickHandler;
-    }
+        public TrailerAdapter(Trailer[] trailer, Context context) {
+            mTrailerData = trailer;
+            this.context = context;
+        }
 
-    public interface TrailerAdapterOnClickHandler {
-        void onClick(int adapterPosition);
-    }
+//        public interface TrailerAdapterOnClickHandler {
+//            void onClick(int adapterPosition, String mTrailerURL);
+//        }
 
-    public class TrailerAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class TrailerAdapterViewHolder extends RecyclerView.ViewHolder{
 
 
         public TrailerAdapterViewHolder(View itemView) {
             super(itemView);
             mTrailerListTextView = (TextView) itemView.findViewById(R.id.tv_trailer_names);
-            itemView.setOnClickListener(this);
+
         }
 
-        @Override
-        public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mClickHandler.onClick(adapterPosition);
-        }
     }
 
     @NonNull
@@ -58,9 +59,18 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerA
     public void onBindViewHolder(@NonNull TrailerAdapterViewHolder holder, int position) {
         //set the Trailer for list item's position
         String TrailerToBind = mTrailerData[position].getName();
-        String TrailerToWatch = mTrailerData[position].getKey();
+        final String TrailerToWatch = mTrailerData[position].getKey();
         mTrailerListTextView.setText(TrailerToBind);
-        mTrailerURL = TrailerToWatch;
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // https://scottweber.com/2013/04/30/adding-click-listeners-to-views-in-adapters/
+                Uri openTrailerVideo = Uri.parse(TMDB_TRAILER_BASE_URL + TrailerToWatch);
+                Intent intent = new Intent(Intent.ACTION_VIEW, openTrailerVideo);
+                context.startActivity(intent);
+
+            }
+        });
     }
 
     @Override
