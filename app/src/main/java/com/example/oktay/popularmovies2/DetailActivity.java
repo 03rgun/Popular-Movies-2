@@ -2,10 +2,15 @@ package com.example.oktay.popularmovies2;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +31,7 @@ import com.example.oktay.popularmovies2.utilities.TheMovieDbJsonUtils;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,9 +40,10 @@ import butterknife.ButterKnife;
 public class DetailActivity extends AppCompatActivity{
 
     private RecyclerView mRecyclerView;
-    private final String KEY_RECYCLER_STATE = "recycler_state";
-    private static Bundle mBundleRecyclerViewState;
     private RecyclerView mRecyclerViewReviews;
+    private static Bundle mBundleRecyclerViewState;
+    private final String KEY_RECYCLER_STATE = "recycler_state";
+    private final String KEY_LISTVIEW_STATE = "DETAIL_SCROLL_POSITION";
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
     private Trailer[] jsonTrailerData;
@@ -63,8 +71,8 @@ public class DetailActivity extends AppCompatActivity{
     TextView mReviewErrorMessage;
     @BindView(R.id.add_to_favorites)
     Button mFavorites;
-//    @BindView(R.id.add_to_favorites)
-//    ToggleButton mFavorites;
+    @BindView(R.id.detail_scrollview)
+    ScrollView mScrollView;
 
 
     @Override
@@ -167,6 +175,21 @@ public class DetailActivity extends AppCompatActivity{
         new FetchReviewTask().execute(reviewId);
     }
 
+/*
+    @Override
+    public void onClick(int adapterPosition, String mTrailerURL) {
+        //resource https://developer.android.com/training/basics/intents/sending
+        Uri openTrailerVideo = Uri.parse(TMDB_TRAILER_BASE_URL + mTrailerURL);
+        Intent intent = new Intent(Intent.ACTION_VIEW, openTrailerVideo);
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+        boolean isIntentSafe = activities.size() > 0;
+        //check if user does have the required apps
+        if (isIntentSafe) {
+            startActivity(intent);
+        }
+    }
+*/
 
 // Async Task for trailers
     public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
@@ -287,29 +310,43 @@ public class DetailActivity extends AppCompatActivity{
     }
 
 
-// https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
+    //https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
     @Override
-    protected void onPause()
-    {
-        super.onPause();
-
-        // save RecyclerView state
+    protected void onPause() {
         mBundleRecyclerViewState = new Bundle();
-        Parcelable listState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        Parcelable listState = mRecyclerViewReviews.getLayoutManager().onSaveInstanceState();
         mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+
+        super.onPause();
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
-
         // restore RecyclerView state
         if (mBundleRecyclerViewState != null) {
             Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
-            mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
+            mRecyclerViewReviews.getLayoutManager().onRestoreInstanceState(listState);
         }
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        outState.putIntArray(KEY_LISTVIEW_STATE,
+                new int[]{ mScrollView.getScrollX(), mScrollView.getScrollY()});
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        final int[] position = savedInstanceState.getIntArray(KEY_LISTVIEW_STATE);
+        if(position != null)
+            mScrollView.post(new Runnable() {
+                public void run() {
+                    mScrollView.scrollTo(position[0], position[1]);
+                }
+            });
+    }
 }
 

@@ -206,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mBundleRecyclerViewState = new Bundle();
         Parcelable listState = mRecyclerView.getLayoutManager().onSaveInstanceState();
         mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
+
         super.onPause();
     }
 
