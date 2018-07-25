@@ -9,7 +9,7 @@ import com.example.oktay.popularmovies2.data.FavoritesContract.*;
 public class FavoritesDbHelper extends SQLiteOpenHelper{
 
     private static final String DATABASE_NAME = "favorites.db";
-    private static final int DATABASE_VERSION = 1; //increment this when you update the database
+    private static final int DATABASE_VERSION = 3; //increment this when you update the database
 
     //constructor
     public FavoritesDbHelper(Context context){
@@ -22,7 +22,11 @@ public class FavoritesDbHelper extends SQLiteOpenHelper{
                 FavoritesAdd.TABLE_NAME + " (" +
                 FavoritesAdd._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 FavoritesAdd.COLUMN_MOVIE_ID + " INTEGER NOT NULL," +
-                FavoritesAdd.COLUMN_MOVIE_NAME+ " TEXT NOT NULL" +
+                FavoritesAdd.COLUMN_MOVIE_NAME + " TEXT NOT NULL," +
+                FavoritesAdd.COLUMN_MOVIE_POSTER + " TEXT NOT NULL," +
+                FavoritesAdd.COLUMN_MOVIE_RATE + " TEXT NOT NULL," +
+                FavoritesAdd.COLUMN_MOVIE_RELEASE + " TEXT NOT NULL," +
+                FavoritesAdd.COLUMN_MOVIE_OVERVIEW + " TEXT NOT NULL" +
                 "); ";
         db.execSQL(SQL_CREATE_FAVORITES_TABLE);
 

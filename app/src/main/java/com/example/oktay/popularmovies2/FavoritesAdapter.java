@@ -7,41 +7,69 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.oktay.popularmovies2.data.FavoritesContract;
+import com.squareup.picasso.Picasso;
 
-public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
+public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesAdapterViewHolder> {
     private Cursor mCursor;
     private Context mContext;
-
-    //public static TextView mFavoriteListTextView = null;
+    private final FavoritesAdapterOnClickHandler mClickHandler;
 
     //constructor
-    public FavoritesAdapter(Context context, Cursor cursor) {
+    public FavoritesAdapter(Context context, Cursor cursor, FavoritesAdapterOnClickHandler clickHandler) {
         this.mContext = context;
         this.mCursor = cursor;
+        mClickHandler = clickHandler;
+    }
+
+    public interface FavoritesAdapterOnClickHandler {
+        void onClick(int adapterPosition);
+    }
+
+    public class FavoritesAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        public final ImageView mMovieListImageView;
+
+        public FavoritesAdapterViewHolder(View itemView) {
+            super(itemView);
+            mMovieListImageView = (ImageView) itemView.findViewById(R.id.iv_movie_posters);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mClickHandler.onClick(adapterPosition);
+        }
     }
 
     @NonNull
     @Override
-    public FavoritesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        int layoutIdForListItem = R.layout.favorites_list_item;
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+    public FavoritesAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+        Context context = viewGroup.getContext();
+        int layoutIdForListItem = R.layout.movies_list_item;
+        LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
         //inflate list item xml into a view
-        View view = inflater.inflate(layoutIdForListItem, parent, shouldAttachToParentImmediately);
-        return new FavoritesViewHolder(view);
+        View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        return new FavoritesAdapterViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull FavoritesViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull FavoritesAdapterViewHolder holder, int position) {
         if (!mCursor.moveToPosition(position)) {
             return;
         }
-        String favoriteMovieName = mCursor.getString(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_NAME));
-        holder.tv_favoriteMovie.setText(favoriteMovieName);
+        String favoriteMoviePoster = mCursor.getString(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_POSTER));
+
+        Picasso.get()
+                .load(favoriteMoviePoster)
+                .placeholder(R.drawable.image_loading)
+                .error(R.drawable.image_not_found)
+                .into(holder.mMovieListImageView);
+//        holder.tv_favoriteMovie.setText(favoriteMovieName);
     }
 
     @Override
@@ -49,24 +77,24 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         return mCursor.getCount();
     }
 
-    class FavoritesViewHolder extends RecyclerView.ViewHolder {
-        TextView tv_favoriteMovie;
-
-        public FavoritesViewHolder(View itemView) {
-            super(itemView);
-            tv_favoriteMovie = (TextView) itemView.findViewById(R.id.tv_favorite_movie_names);
-        }
-    }
-
-
-    public void swapCursor(Cursor newCursor){
-        if (mCursor != null){
-            mCursor.close();
-        }
-        mCursor = newCursor;
-        if (newCursor != null){
-            this.notifyDataSetChanged();
-        }
-    }
+//    class FavoritesViewHolder extends RecyclerView.ViewHolder {
+//        public final ImageView mMovieListImageView;
+//
+//        public FavoritesViewHolder(View itemView) {
+//            super(itemView);
+//            mMovieListImageView; = (ImageView) itemView.findViewById(R.id.tv_favorite_movie_names);
+//        }
+//    }
+//
+//
+//    public void swapCursor(Cursor newCursor){
+//        if (mCursor != null){
+//            mCursor.close();
+//        }
+//        mCursor = newCursor;
+//        if (newCursor != null){
+//            this.notifyDataSetChanged();
+//        }
+//    }
 
 }

@@ -2,12 +2,8 @@ package com.example.oktay.popularmovies2;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
@@ -31,7 +27,6 @@ import com.example.oktay.popularmovies2.utilities.TheMovieDbJsonUtils;
 import com.squareup.picasso.Picasso;
 
 import java.net.URL;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -43,16 +38,18 @@ public class DetailActivity extends AppCompatActivity{
     private RecyclerView mRecyclerViewReviews;
     private static Bundle mBundleRecyclerViewState;
     private final String KEY_RECYCLER_STATE = "recycler_state";
-    private final String KEY_LISTVIEW_STATE = "DETAIL_SCROLL_POSITION";
     private TrailerAdapter mTrailerAdapter;
     private ReviewAdapter mReviewAdapter;
     private Trailer[] jsonTrailerData;
     private Review[] jsonReviewData;
     private int id = 0;
     String title = "";
+    String poster = "";
+    String rate = "";
+    String release = "";
+    String overview = "";
     private SQLiteDatabase mDb;
     private final static String LOG_TAG = DetailActivity.class.getSimpleName();
-    final String TMDB_TRAILER_BASE_URL = "https://www.youtube.com/watch?v=";
 
 
     @BindView(R.id.iv_detail_movie_poster)
@@ -117,11 +114,11 @@ public class DetailActivity extends AppCompatActivity{
 
 
         // https://stackoverflow.com/questions/41791737/how-to-pass-json-image-from-recycler-view-to-another-activity
-        String poster = getIntent().getStringExtra("poster");
+        poster = getIntent().getStringExtra("poster");
         title = getIntent().getStringExtra("title");
-        String rate = getIntent().getStringExtra("rate");
-        String release = getIntent().getStringExtra("release");
-        String overview = getIntent().getStringExtra("overview");
+        rate = getIntent().getStringExtra("rate");
+        release = getIntent().getStringExtra("release");
+        overview = getIntent().getStringExtra("overview");
         id = getIntent().getIntExtra("id",0);
 
 
@@ -147,7 +144,7 @@ public class DetailActivity extends AppCompatActivity{
 
                     mFavorites.setText(getString(R.string.add_to_favorites));
                 } else {
-                    addToFavorites(title, id);
+                    addToFavorites(title, id, poster, rate, release, overview);
                     Context context = getApplicationContext();
                     CharSequence addedFavorites = "This movie is added to your favorites.";
                     Toast toast = Toast.makeText(context, addedFavorites, Toast.LENGTH_SHORT);
@@ -174,22 +171,6 @@ public class DetailActivity extends AppCompatActivity{
         String reviewId = String.valueOf(id);
         new FetchReviewTask().execute(reviewId);
     }
-
-/*
-    @Override
-    public void onClick(int adapterPosition, String mTrailerURL) {
-        //resource https://developer.android.com/training/basics/intents/sending
-        Uri openTrailerVideo = Uri.parse(TMDB_TRAILER_BASE_URL + mTrailerURL);
-        Intent intent = new Intent(Intent.ACTION_VIEW, openTrailerVideo);
-        PackageManager packageManager = getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
-        boolean isIntentSafe = activities.size() > 0;
-        //check if user does have the required apps
-        if (isIntentSafe) {
-            startActivity(intent);
-        }
-    }
-*/
 
 // Async Task for trailers
     public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
@@ -228,6 +209,7 @@ public class DetailActivity extends AppCompatActivity{
             } else {
                 mTrailerErrorMessage.setVisibility(View.VISIBLE);
             }
+
         }
 
     }
@@ -276,12 +258,16 @@ public class DetailActivity extends AppCompatActivity{
 
 
     //add to favorites
-    private long addToFavorites(String name, int id){
+    private long addToFavorites(String name, int id, String poster, String rate, String release, String overview){
         //create a ContentValues instance to pass the values onto the insert query
         ContentValues cv = new ContentValues();
         //call put to insert the values with the keys
         cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID, id);
         cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_NAME, name);
+        cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_POSTER, poster);
+        cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RATE, rate);
+        cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RELEASE, release);
+        cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_OVERVIEW, overview);
         //run an insert query on TABLE_NAME with the ContentValues created
         return mDb.insert(FavoritesContract.FavoritesAdd.TABLE_NAME, null, cv);
     }
@@ -323,30 +309,11 @@ public class DetailActivity extends AppCompatActivity{
     @Override
     protected void onResume() {
         super.onResume();
-        // restore RecyclerView state
         if (mBundleRecyclerViewState != null) {
             Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
             mRecyclerViewReviews.getLayoutManager().onRestoreInstanceState(listState);
         }
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        super.onSaveInstanceState(outState, outPersistentState);
-        outState.putIntArray(KEY_LISTVIEW_STATE,
-                new int[]{ mScrollView.getScrollX(), mScrollView.getScrollY()});
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        final int[] position = savedInstanceState.getIntArray(KEY_LISTVIEW_STATE);
-        if(position != null)
-            mScrollView.post(new Runnable() {
-                public void run() {
-                    mScrollView.scrollTo(position[0], position[1]);
-                }
-            });
-    }
 }
 

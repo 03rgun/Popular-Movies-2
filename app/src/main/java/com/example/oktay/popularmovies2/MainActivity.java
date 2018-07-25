@@ -2,6 +2,8 @@ package com.example.oktay.popularmovies2;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -16,6 +18,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.oktay.popularmovies2.data.FavoritesContract;
+import com.example.oktay.popularmovies2.data.FavoritesDbHelper;
 import com.example.oktay.popularmovies2.model.Movie;
 import com.example.oktay.popularmovies2.utilities.NetworkUtils;
 import com.example.oktay.popularmovies2.utilities.TheMovieDbJsonUtils;
@@ -25,13 +29,15 @@ import java.net.URL;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, FavoritesAdapter.FavoritesAdapterOnClickHandler {
 
     private RecyclerView mRecyclerView;
     private static Bundle mBundleRecyclerViewState;
     private final String KEY_RECYCLER_STATE = "recycler_state";
     private MovieAdapter mMovieAdapter;
     private Movie[] jsonMovieData;
+    private SQLiteDatabase mDb;
+    private FavoritesAdapter mFavoritesAdapter;
 
     @BindView(R.id.tv_error_message)
     TextView mErrorMessage;
@@ -46,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
+            // TODO top_rated -> detail -> back -> GOES POPULAR. FIX IT.
         }
         setContentView(R.layout.activity_main);
 
@@ -72,6 +79,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         String theMovieDbQueryType = query;
         showJsonDataResults();
         new FetchMovieTask().execute(theMovieDbQueryType);
+    }
+
+    private void loadFavoritesData(){
+        //favorites
+        FavoritesDbHelper dbHelper = new FavoritesDbHelper(this);
+        mDb = dbHelper.getReadableDatabase();
+        Cursor cursor = getAllFavorites();
+        mFavoritesAdapter = new FavoritesAdapter(this, cursor, MainActivity.this);
+        mRecyclerView.setAdapter(mFavoritesAdapter);
     }
 
     @Override
@@ -168,17 +184,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         if (menuItemSelected == R.id.action_favorites) {
-            Context context = this;
-            Class destinationClass = FavoritesActivity.class;
-            Intent intentToStartFavorites = new Intent(context, destinationClass);
-            startActivity(intentToStartFavorites);
+            loadFavoritesData();
+            query = "";
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    //calculates how many columns can I fit in screen.
+    //calculates how many columns can fit in screen.
     //Source: https://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
     public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -186,6 +200,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int noOfColumns = (int) (dpWidth / 180);
         return noOfColumns;
     }
+
+
+
+
+    private Cursor getAllFavorites(){
+        return mDb.query(
+                FavoritesContract.FavoritesAdd.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
 
     //Source: https://developer.android.com/guide/components/activities/activity-lifecycle
     @Override
@@ -206,17 +236,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mBundleRecyclerViewState = new Bundle();
         Parcelable listState = mRecyclerView.getLayoutManager().onSaveInstanceState();
         mBundleRecyclerViewState.putParcelable(KEY_RECYCLER_STATE, listState);
-
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // restore RecyclerView state
         if (mBundleRecyclerViewState != null) {
             Parcelable listState = mBundleRecyclerViewState.getParcelable(KEY_RECYCLER_STATE);
             mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
         }
     }
+
+
 }
