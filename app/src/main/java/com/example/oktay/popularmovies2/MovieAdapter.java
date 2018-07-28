@@ -11,6 +11,8 @@ import android.widget.ImageView;
 import com.example.oktay.popularmovies2.model.Movie;
 import com.squareup.picasso.Picasso;
 
+import java.util.List;
+
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
     //I went through Sunshine's RecyclerView and Click Handlers.
     //Following codes are from Sunshine.

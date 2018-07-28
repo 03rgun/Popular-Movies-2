@@ -1,9 +1,16 @@
 package com.example.oktay.popularmovies2.data;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.example.oktay.popularmovies2.MainActivity;
 import com.example.oktay.popularmovies2.data.FavoritesContract.*;
+import com.example.oktay.popularmovies2.model.Movie;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class FavoritesDbHelper extends SQLiteOpenHelper{
@@ -38,5 +45,49 @@ public class FavoritesDbHelper extends SQLiteOpenHelper{
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + FavoritesAdd.TABLE_NAME);
         onCreate(db);
+    }
+
+
+
+
+    public List<Movie> getFavorites(){
+        String[] col = {
+                FavoritesContract.FavoritesAdd._ID,
+                FavoritesContract.FavoritesAdd.COLUMN_MOVIE_NAME,
+                FavoritesContract.FavoritesAdd.COLUMN_MOVIE_POSTER,
+                FavoritesContract.FavoritesAdd.COLUMN_MOVIE_OVERVIEW,
+                FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RELEASE,
+                FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RATE,
+                //FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID
+        };
+        List<Movie> favorites = new ArrayList<>();
+
+        SQLiteDatabase mDb = this.getReadableDatabase();
+        Cursor cursor = mDb.query(
+                FavoritesContract.FavoritesAdd.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        if (cursor.moveToFirst()){
+            do {
+                Movie movie = new Movie();
+                movie.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID))));
+                movie.setTitle(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_NAME)));
+                movie.setPoster(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_POSTER)));
+                movie.setOverview(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_OVERVIEW)));
+                movie.setRate(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RATE)));
+                movie.setRelease(cursor.getString(cursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RELEASE)));
+
+                favorites.add(movie);
+            }
+            while (cursor.moveToNext());
+        }
+        cursor.close();
+        mDb.close();
+        return favorites;
     }
 }

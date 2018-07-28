@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Parcelable;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,6 +19,7 @@ import android.widget.Toast;
 
 import com.example.oktay.popularmovies2.data.FavoritesContract;
 import com.example.oktay.popularmovies2.data.FavoritesDbHelper;
+import com.example.oktay.popularmovies2.model.Movie;
 import com.example.oktay.popularmovies2.model.Review;
 import com.example.oktay.popularmovies2.model.Trailer;
 import com.example.oktay.popularmovies2.utilities.NetworkUtils;
@@ -42,6 +42,8 @@ public class DetailActivity extends AppCompatActivity{
     private ReviewAdapter mReviewAdapter;
     private Trailer[] jsonTrailerData;
     private Review[] jsonReviewData;
+    private FavoritesDbHelper favoritesDbHelper;
+    private Movie favorite;
     private int id = 0;
     String title = "";
     String poster = "";

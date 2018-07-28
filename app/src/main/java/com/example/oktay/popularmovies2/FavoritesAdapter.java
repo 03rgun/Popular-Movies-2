@@ -31,15 +31,18 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     public class FavoritesAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final ImageView mMovieListImageView;
+        public final TextView mMovieTitle;
 
         public FavoritesAdapterViewHolder(View itemView) {
             super(itemView);
             mMovieListImageView = (ImageView) itemView.findViewById(R.id.iv_movie_posters);
+            mMovieTitle = (TextView) itemView.findViewById(R.id.tv_detail_title);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+
             int adapterPosition = getAdapterPosition();
             mClickHandler.onClick(adapterPosition);
         }
@@ -63,6 +66,11 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
             return;
         }
         String favoriteMoviePoster = mCursor.getString(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_POSTER));
+        String favoriteMovieTitle = mCursor.getString(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_NAME));
+        String favoriteMovieRelease = mCursor.getString(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RELEASE));
+        String favoriteMovieRate = mCursor.getString(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RATE));
+        String favoriteMovieOverview = mCursor.getString(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_OVERVIEW));
+
 
         Picasso.get()
                 .load(favoriteMoviePoster)
@@ -70,13 +78,13 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                 .error(R.drawable.image_not_found)
                 .into(holder.mMovieListImageView);
 //        holder.tv_favoriteMovie.setText(favoriteMovieName);
+//        holder.mMovieTitle.setText(favoriteMovieTitle);
     }
 
     @Override
     public int getItemCount() {
         return mCursor.getCount();
     }
-
 //    class FavoritesViewHolder extends RecyclerView.ViewHolder {
 //        public final ImageView mMovieListImageView;
 //

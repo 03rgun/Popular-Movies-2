@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,12 +46,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     String query = "popular";
     private static final String LIFECYCLE_CALLBACKS_TEXT_KEY = "callbacks";
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             query = savedInstanceState.getString(LIFECYCLE_CALLBACKS_TEXT_KEY);
-            // TODO top_rated -> detail -> back -> GOES POPULAR. FIX IT.
         }
         setContentView(R.layout.activity_main);
 
@@ -88,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Cursor cursor = getAllFavorites();
         mFavoritesAdapter = new FavoritesAdapter(this, cursor, MainActivity.this);
         mRecyclerView.setAdapter(mFavoritesAdapter);
+
     }
 
     @Override
@@ -184,8 +184,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         if (menuItemSelected == R.id.action_favorites) {
-            loadFavoritesData();
-            query = "";
+            Context context = this;
+            Class destinationClass = FavoritesActivity.class;
+            Intent intentToStartDetailActivity = new Intent(context, destinationClass);
+            startActivity(intentToStartDetailActivity);
             return true;
         }
 
@@ -247,6 +249,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             mRecyclerView.getLayoutManager().onRestoreInstanceState(listState);
         }
     }
-
 
 }
