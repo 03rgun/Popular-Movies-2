@@ -42,8 +42,6 @@ public class DetailActivity extends AppCompatActivity{
     private ReviewAdapter mReviewAdapter;
     private Trailer[] jsonTrailerData;
     private Review[] jsonReviewData;
-    private FavoritesDbHelper favoritesDbHelper;
-    private Movie favorite;
     private int id = 0;
     String title = "";
     String poster = "";
@@ -51,7 +49,6 @@ public class DetailActivity extends AppCompatActivity{
     String release = "";
     String overview = "";
     private SQLiteDatabase mDb;
-    private final static String LOG_TAG = DetailActivity.class.getSimpleName();
 
 
     @BindView(R.id.iv_detail_movie_poster)

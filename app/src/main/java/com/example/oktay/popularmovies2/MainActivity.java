@@ -28,7 +28,7 @@ import java.net.URL;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, FavoritesAdapter.FavoritesAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler{
 
     private RecyclerView mRecyclerView;
     private static Bundle mBundleRecyclerViewState;
@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     private MovieAdapter mMovieAdapter;
     private Movie[] jsonMovieData;
     private SQLiteDatabase mDb;
-    private FavoritesAdapter mFavoritesAdapter;
 
     @BindView(R.id.tv_error_message)
     TextView mErrorMessage;
@@ -78,16 +77,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         String theMovieDbQueryType = query;
         showJsonDataResults();
         new FetchMovieTask().execute(theMovieDbQueryType);
-    }
-
-    private void loadFavoritesData(){
-        //favorites
-        FavoritesDbHelper dbHelper = new FavoritesDbHelper(this);
-        mDb = dbHelper.getReadableDatabase();
-        Cursor cursor = getAllFavorites();
-        mFavoritesAdapter = new FavoritesAdapter(this, cursor, MainActivity.this);
-        mRecyclerView.setAdapter(mFavoritesAdapter);
-
     }
 
     @Override
@@ -201,21 +190,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
         int noOfColumns = (int) (dpWidth / 180);
         return noOfColumns;
-    }
-
-
-
-
-    private Cursor getAllFavorites(){
-        return mDb.query(
-                FavoritesContract.FavoritesAdd.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
     }
 
 

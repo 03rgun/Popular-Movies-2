@@ -1,7 +1,5 @@
 package com.example.oktay.popularmovies2;
 
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -11,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
 
 import com.example.oktay.popularmovies2.data.FavoritesContract;
 
@@ -21,25 +18,6 @@ public class FavoritesActivity extends AppCompatActivity implements LoaderManage
     private static final int FAVORITE_LOADER_ID = 0;
     private FavoritesCursorAdapter mAdapter;
     RecyclerView mRecyclerView;
-    Context context = this;
-
-    public static final String[] FAVORITE_DETAIL = {
-            FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID,
-//            FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RATE,
-//            FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RELEASE,
-//            FavoritesContract.FavoritesAdd.COLUMN_MOVIE_POSTER,
-//            FavoritesContract.FavoritesAdd.COLUMN_MOVIE_OVERVIEW,
-//            FavoritesContract.FavoritesAdd.COLUMN_MOVIE_NAME,
-    };
-
-    public static final int INDEX_MOVIE_ID = 0;
-//    public static final int INDEX_MOVIE_NAME = 1;
-//    public static final int INDEX_MOVIE_OVERVIEW = 2;
-//    public static final int INDEX_MOVIE_POSTER = 3;
-//    public static final int INDEX_MOVIE_RELEASE = 4;
-//    public static final int INDEX_WEATHER_WIND_SPEED = 5;
-//    public static final int INDEX_WEATHER_DEGREES = 6;
-//    public static final int INDEX_WEATHER_CONDITION_ID = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,26 +35,6 @@ public class FavoritesActivity extends AppCompatActivity implements LoaderManage
         mAdapter = new FavoritesCursorAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-//        mRecyclerView.addOnItemTouchListener(
-//                new FavoriteItemClickListener(context, mRecyclerView, new FavoriteItemClickListener.OnItemClickListener() {
-//                    @Override
-//                    public void onItemClick(View view, int position) {
-//                        Class destinationClass = DetailActivity.class;
-//
-//                        Intent intentToStartDetailActivity = new Intent(context, destinationClass);
-//                        intentToStartDetailActivity.putExtra(Intent.EXTRA_TEXT, position);
-//                        intentToStartDetailActivity.putExtra("title", mAdapter.name);
-//                        intentToStartDetailActivity.putExtra("poster", mAdapter.poster);
-//                        intentToStartDetailActivity.putExtra("rate", mAdapter.rate);
-//                        intentToStartDetailActivity.putExtra("release", mAdapter.release);
-//                        intentToStartDetailActivity.putExtra("overview", mAdapter.overview);
-//                        intentToStartDetailActivity.putExtra("id", mAdapter.movieId);
-//
-//                        startActivity(intentToStartDetailActivity);
-//
-//                    }
-//                }));
-
 
         getSupportLoaderManager().initLoader(FAVORITE_LOADER_ID, null, this);
     }
