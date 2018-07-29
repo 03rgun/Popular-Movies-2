@@ -33,10 +33,18 @@
             android:authorities="com.example.oktay.popularmovies2"
             android:exported="true" />
 
-        <!-- <activity android:name=".FavoritesActivity"></activity> -->
         <activity
             android:name=".FavoritesActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:launchMode="singleTop">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+        <activity
+            android:name=".FavoritesDetailActivity"
+            android:parentActivityName=".FavoritesActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

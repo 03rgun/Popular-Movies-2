@@ -31,7 +31,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-public class DetailActivity extends AppCompatActivity{
+public class FavoritesDetailActivity extends AppCompatActivity{
 
     private RecyclerView mRecyclerView;
     private RecyclerView mRecyclerViewReviews;
@@ -73,7 +73,7 @@ public class DetailActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_favorites_detail);
 
         //favorites
         FavoritesDbHelper dbHelper = new FavoritesDbHelper(this);
@@ -170,7 +170,7 @@ public class DetailActivity extends AppCompatActivity{
         new FetchReviewTask().execute(reviewId);
     }
 
-// Async Task for trailers
+    // Async Task for trailers
     public class FetchTrailerTask extends AsyncTask<String, Void, Trailer[]> {
         @Override
         protected void onPreExecute() {
@@ -189,7 +189,7 @@ public class DetailActivity extends AppCompatActivity{
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
 
                 jsonTrailerData
-                        = TheMovieDbJsonUtils.getTrailerInformationsFromJson(DetailActivity.this, jsonMovieResponse);
+                        = TheMovieDbJsonUtils.getTrailerInformationsFromJson(FavoritesDetailActivity.this, jsonMovieResponse);
 
                 return jsonTrailerData;
 
@@ -202,7 +202,7 @@ public class DetailActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(Trailer[] trailerData) {
             if (trailerData != null) {
-                mTrailerAdapter = new TrailerAdapter(trailerData, DetailActivity.this);
+                mTrailerAdapter = new TrailerAdapter(trailerData, FavoritesDetailActivity.this);
                 mRecyclerView.setAdapter(mTrailerAdapter);
             } else {
                 mTrailerErrorMessage.setVisibility(View.VISIBLE);
@@ -213,7 +213,7 @@ public class DetailActivity extends AppCompatActivity{
     }
 
 
-//Async task for reviews
+    //Async task for reviews
     public class FetchReviewTask extends AsyncTask<String, Void, Review[]> {
         @Override
         protected void onPreExecute() {
@@ -232,7 +232,7 @@ public class DetailActivity extends AppCompatActivity{
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
 
                 jsonReviewData
-                        = TheMovieDbJsonUtils.getReviewInformationsFromJson(DetailActivity.this, jsonMovieResponse);
+                        = TheMovieDbJsonUtils.getReviewInformationsFromJson(FavoritesDetailActivity.this, jsonMovieResponse);
 
                 return jsonReviewData;
 
@@ -272,7 +272,7 @@ public class DetailActivity extends AppCompatActivity{
 
     //remove favorites
     private boolean removeFavorites(int id){
-       return mDb.delete(FavoritesContract.FavoritesAdd.TABLE_NAME,
+        return mDb.delete(FavoritesContract.FavoritesAdd.TABLE_NAME,
                 FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=" + id, null) > 0;
     }
 

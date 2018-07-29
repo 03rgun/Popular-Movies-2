@@ -10,8 +10,8 @@
     <string name="label_reviews">Reviews: </string>
     <string name="add_to_favorites">Add to Favorites</string>
     <string name="remove_from_favorites">Remove from Favorites</string>
-    <string name="trailer_error_message">Looks like there is no trailer for this movie. </string>
-    <string name="review_error_message">Looks like there is no reviews for this movie. </string>
+    <string name="trailer_error_message">Looks like there is no connection. </string>
+    <string name="review_error_message">Looks like there is no connection. </string>
     <string name="rate_out_of_ten"> / 10 </string>
     <!-- details -->
     <string name="detail_title">Matrix</string>

@@ -95,7 +95,7 @@ public class FavoritesCursorAdapter extends RecyclerView.Adapter<FavoritesCursor
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
             mCursor.moveToPosition(adapterPosition);
-            Class destinationClass = DetailActivity.class;
+            Class destinationClass = FavoritesDetailActivity.class;
 
             String name = mCursor.getString(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_NAME));
             int movieId = mCursor.getInt(mCursor.getColumnIndex(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID));
