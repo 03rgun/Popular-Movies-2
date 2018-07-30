@@ -286,24 +286,6 @@ public class DetailActivity extends AppCompatActivity{
                 FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=" + id, null) > 0;
     }
 
-    //check if the id exist in database
-    //source: https://stackoverflow.com/questions/20415309/android-sqlite-how-to-check-if-a-record-exists
-    public boolean isMovieFavorited(int id){
-        String query = "SELECT * FROM " + FavoritesContract.FavoritesAdd.TABLE_NAME + " WHERE "
-                + FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + " = " + id;
-        Cursor cursor = mDb.rawQuery(query, null);
-
-        if(cursor.getCount() <= 0){
-            cursor.close();
-            mFavorites.setText(getString(R.string.add_to_favorites));
-            return false;
-        }
-        cursor.close();
-        mFavorites.setText(getString(R.string.remove_from_favorites));
-        return true;
-    }
-
-
     //https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
     @Override
     protected void onPause() {
@@ -322,10 +304,8 @@ public class DetailActivity extends AppCompatActivity{
             mRecyclerViewReviews.getLayoutManager().onRestoreInstanceState(listState);
         }
     }
-//    public boolean doesIdExists(int id) {
-//        return DatabaseUtils.queryNumEntries(mDb, FavoritesContract.FavoritesAdd.TABLE_NAME, FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=?", new String[] {"1"}) > 0;
-//    }
 
+    //check if the id exist in database
     public boolean isMovieFavorited(String id){
         mSelectionClause = FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + " = ?";
         mSelectionArgs[0] = id;
