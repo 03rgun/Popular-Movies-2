@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
@@ -56,6 +57,7 @@ public class FavoritesDetailActivity extends AppCompatActivity{
 
     private String[] mSelectionArgs = {""};
     private String mSelectionClause;
+    Uri mNewUri;
 
 
     @BindView(R.id.iv_detail_movie_poster)
@@ -264,7 +266,7 @@ public class FavoritesDetailActivity extends AppCompatActivity{
 
 
     //add to favorites
-    private long addToFavorites(String name, int id, String poster, String rate, String release, String overview){
+    private void addToFavorites(String name, int id, String poster, String rate, String release, String overview){
         //create a ContentValues instance to pass the values onto the insert query
         ContentValues cv = new ContentValues();
         //call put to insert the values with the keys
@@ -275,13 +277,18 @@ public class FavoritesDetailActivity extends AppCompatActivity{
         cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_RELEASE, release);
         cv.put(FavoritesContract.FavoritesAdd.COLUMN_MOVIE_OVERVIEW, overview);
         //run an insert query on TABLE_NAME with the ContentValues created
-        return mDb.insert(FavoritesContract.FavoritesAdd.TABLE_NAME, null, cv);
+        //return mDb.insert(FavoritesContract.FavoritesAdd.TABLE_NAME, null, cv);
+        mNewUri = getContentResolver().insert(
+                FavoritesContract.FavoritesAdd.CONTENT_URI,
+                cv
+        );
     }
 
     //remove favorites
-    private boolean removeFavorites(int id){
+    public final boolean removeFavorites(int id){
         return mDb.delete(FavoritesContract.FavoritesAdd.TABLE_NAME,
                 FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=" + id, null) > 0;
+
     }
 
     //check if the id exist in database
