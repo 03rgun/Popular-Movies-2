@@ -9,7 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
-public class NetworkUtils {
+public final class NetworkUtils {
     // Final url should look like this:
     // https://api.themoviedb.org/3/movie/popular?api_key={YOUR API KEY HERE}&language=en-US&page=1
     final static String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3/movie";

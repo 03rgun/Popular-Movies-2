@@ -42,12 +42,20 @@ public class FavoritesDetailActivity extends AppCompatActivity{
     private Trailer[] jsonTrailerData;
     private Review[] jsonReviewData;
     private int id = 0;
-    String title = "";
-    String poster = "";
-    String rate = "";
-    String release = "";
-    String overview = "";
+    private String title = "";
+    private String poster = "";
+    private String rate = "";
+    private String release = "";
+    private String overview = "";
     private SQLiteDatabase mDb;
+    String[] mProjection =
+            {
+                    FavoritesContract.FavoritesAdd._ID,
+                    FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID
+            };
+
+    private String[] mSelectionArgs = {""};
+    private String mSelectionClause;
 
 
     @BindView(R.id.iv_detail_movie_poster)
@@ -132,7 +140,7 @@ public class FavoritesDetailActivity extends AppCompatActivity{
 
         mFavorites.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (isMovieFavorited(id)) {
+                if (isMovieFavorited(String.valueOf(id))) {
                     removeFavorites(id);
 
                     Context context = getApplicationContext();
@@ -156,7 +164,7 @@ public class FavoritesDetailActivity extends AppCompatActivity{
 
         loadTrailerData();
         loadReviewData();
-        isMovieFavorited(id);
+        isMovieFavorited(String.valueOf(id));
     }
 
 
@@ -277,18 +285,22 @@ public class FavoritesDetailActivity extends AppCompatActivity{
     }
 
     //check if the id exist in database
-    //source: https://stackoverflow.com/questions/20415309/android-sqlite-how-to-check-if-a-record-exists
-    public boolean isMovieFavorited(int id){
-        String query = "SELECT * FROM " + FavoritesContract.FavoritesAdd.TABLE_NAME + " WHERE "
-                + FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + " = " + id;
-        Cursor cursor = mDb.rawQuery(query, null);
+    public boolean isMovieFavorited(String id){
+        mSelectionClause = FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + " = ?";
+        mSelectionArgs[0] = id;
+        Cursor mCursor = getContentResolver().query(
+                FavoritesContract.FavoritesAdd.CONTENT_URI,
+                mProjection,
+                mSelectionClause,
+                mSelectionArgs,
+                null);
 
-        if(cursor.getCount() <= 0){
-            cursor.close();
+        if(mCursor.getCount() <= 0){
+            mCursor.close();
             mFavorites.setText(getString(R.string.add_to_favorites));
             return false;
         }
-        cursor.close();
+        mCursor.close();
         mFavorites.setText(getString(R.string.remove_from_favorites));
         return true;
     }
