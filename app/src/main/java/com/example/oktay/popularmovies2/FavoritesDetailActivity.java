@@ -18,6 +18,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.oktay.popularmovies2.data.FavoritesContentProvider;
 import com.example.oktay.popularmovies2.data.FavoritesContract;
 import com.example.oktay.popularmovies2.data.FavoritesDbHelper;
 import com.example.oktay.popularmovies2.model.Review;
@@ -143,7 +144,7 @@ public class FavoritesDetailActivity extends AppCompatActivity{
         mFavorites.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (isMovieFavorited(String.valueOf(id))) {
-                    removeFavorites(id);
+                    removeFavorites(String.valueOf(id));
 
                     Context context = getApplicationContext();
                     CharSequence removedFavorites = "This movie is removed from your favorites.";
@@ -285,10 +286,16 @@ public class FavoritesDetailActivity extends AppCompatActivity{
     }
 
     //remove favorites
-    public final boolean removeFavorites(int id){
-        return mDb.delete(FavoritesContract.FavoritesAdd.TABLE_NAME,
-                FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=" + id, null) > 0;
-
+    private void removeFavorites(String id){
+        mSelectionClause = FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + " LIKE ?";
+        String[] selectionArgs = new String[] {id};
+        //return mDb.delete(FavoritesContract.FavoritesAdd.TABLE_NAME,
+          //      FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=" + id, null) > 0;
+        getContentResolver().delete(
+                FavoritesContract.FavoritesAdd.CONTENT_URI,
+                mSelectionClause,
+                selectionArgs
+        );
     }
 
     //check if the id exist in database

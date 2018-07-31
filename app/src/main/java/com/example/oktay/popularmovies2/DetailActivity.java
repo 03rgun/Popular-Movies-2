@@ -144,7 +144,7 @@ public class DetailActivity extends AppCompatActivity{
             public void onClick(View v) {
                 //if (isMovieFavorited(id)) {
                 if (isMovieFavorited(String.valueOf(id))) {
-                    removeFavorites(id);
+                    removeFavorites(String.valueOf(id));
 
                     Context context = getApplicationContext();
                     CharSequence removedFavorites = "This movie is removed from your favorites.";
@@ -286,10 +286,18 @@ public class DetailActivity extends AppCompatActivity{
     }
 
     //remove favorites
-    private boolean removeFavorites(int id){
-       return mDb.delete(FavoritesContract.FavoritesAdd.TABLE_NAME,
-                FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=" + id, null) > 0;
+    private void removeFavorites(String id){
+        mSelectionClause = FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + " LIKE ?";
+        String[] selectionArgs = new String[] {id};
+        //return mDb.delete(FavoritesContract.FavoritesAdd.TABLE_NAME,
+        //      FavoritesContract.FavoritesAdd.COLUMN_MOVIE_ID + "=" + id, null) > 0;
+        getContentResolver().delete(
+                FavoritesContract.FavoritesAdd.CONTENT_URI,
+                mSelectionClause,
+                selectionArgs
+        );
     }
+
 
     //https://stackoverflow.com/questions/28236390/recyclerview-store-restore-state-between-activities
     @Override

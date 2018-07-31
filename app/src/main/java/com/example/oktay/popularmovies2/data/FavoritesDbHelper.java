@@ -1,16 +1,10 @@
 package com.example.oktay.popularmovies2.data;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.oktay.popularmovies2.MainActivity;
 import com.example.oktay.popularmovies2.data.FavoritesContract.*;
-import com.example.oktay.popularmovies2.model.Movie;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class FavoritesDbHelper extends SQLiteOpenHelper{

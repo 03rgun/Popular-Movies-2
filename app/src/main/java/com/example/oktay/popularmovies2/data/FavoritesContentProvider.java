@@ -120,13 +120,13 @@ public class FavoritesContentProvider extends ContentProvider{
         int favoritesDeleted;
 
         switch (match) {
-            case FAVORITES_WITH_ID:
-                String id = uri.getPathSegments().get(1);
-                favoritesDeleted = db.delete(TABLE_NAME, "_id=?", new String[]{id});
+                case FAVORITES:
+                    favoritesDeleted = db.delete(TABLE_NAME, selection, selectionArgs);
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown uri: " +uri);
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
+
         if (favoritesDeleted != 0){
             getContext().getContentResolver().notifyChange(uri,null);
         }
